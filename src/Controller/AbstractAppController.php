@@ -5,7 +5,7 @@ namespace App\Controller;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -26,7 +26,8 @@ abstract class AbstractAppController extends AbstractController
     }
 
     public function __construct(
-        protected readonly EntityManagerInterface $entityManager
+        protected readonly EntityManagerInterface $entityManager,
+        protected readonly RequestStack $requestStack
     ) {
     }
 
@@ -38,7 +39,7 @@ abstract class AbstractAppController extends AbstractController
         ]);
     }
 
-    public function form(Request $request, ?int $id = null) : Response
+    public function form(?int $id = null) : Response
     {
         if ($id) {
             $entity = $this->entityManager->getRepository($this->getEntityClass())->find($id);
@@ -49,7 +50,7 @@ abstract class AbstractAppController extends AbstractController
             $entity = new ($this->getEntityClass())();
         }
         $form = $this->createForm($this->getFormTypeClass(), $entity);
-        $form->handleRequest($request);
+        $form->handleRequest($this->requestStack->getCurrentRequest());
         if ($form->isSubmitted() && $form->isValid())
         {
             $this->entityManager->persist($entity);

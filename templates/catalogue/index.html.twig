@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lista katalogów{% endblock %}
+{% block page_title %}Lista katalogów{% endblock %}
+
+{% block actions %}
+    <div class="pt-2 pb-2">
+        <a href="{{ path('catalogue_new') }}">
+            <button type="button" class="btn btn-sm btn-outline-info">Dodaj katalog</button>
+        </a>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="category-list-container">
+        {% if entities | length > 0 %}
+            {% for catalogue in entities %}
+                <div class="row border border-start-0 border-end-0 border-bottom-0 {% if loop.first %}border-top-0{% endif %} pt-2 pb-2">
+                    <div class="col-12 col-md-8">
+                        <span class="fw-semibold fs-5">{{ catalogue.name }}</span>
+                        <br>
+                        <span class="text-muted fs-6"> Utworzono: {{ catalogue.createDate | date('Y-m-d H:i:s') }}</span>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="mt-2 text-end">
+                            <a href="{{ path('catalogue_edit', {'id': catalogue.id}) }}">
+                                <button type="button" class="btn btn-sm btn-warning">
+                                    <i class="fa-solid fa-gear"></i> Edycja
+                                </button>
+                            </a>
+{#                            <a href="{{ path('catalogue_view', {'id': thread.id}) }}">#}
+{#                                <button type="button" class="btn btn-sm btn-outline-secondary">#}
+{#                                    <i class="fa-solid fa-file-pen"></i> Podgląd#}
+{#                                </button>#}
+{#                            </a>#}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Nie znaleziono katalogów</p>
+        {% endif %}
+    </div>
+{% endblock %}
