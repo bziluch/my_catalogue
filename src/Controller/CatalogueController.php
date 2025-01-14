@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Catalogue;
 use App\Form\CatalogueType;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -20,6 +22,11 @@ class CatalogueController extends AbstractAppController
     public function form(?int $id = null): Response
     {
         return parent::form($id);
+    }
+
+    protected function getIndexList(EntityRepository $entityRepository): array|Collection
+    {
+        return $entityRepository->findBy(['user' => $this->getUser()], ['id' => 'DESC']);
     }
 
     protected function getEntityClass(): string

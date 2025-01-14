@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,9 +21,9 @@ abstract class AbstractAppController extends AbstractController
         return null;
     }
 
-    protected function getIndexList(): array|Collection
+    protected function getIndexList(EntityRepository $entityRepository): array|Collection
     {
-        return $this->entityManager->getRepository($this->getEntityClass())->findAll();
+        return $entityRepository->findAll();
     }
 
     public function __construct(
@@ -33,7 +34,9 @@ abstract class AbstractAppController extends AbstractController
 
     public function index() : Response
     {
-        $entities = $this->getIndexList();
+        $repository = $this->entityManager->getRepository($this->getEntityClass());
+        $entities = $this->getIndexList($repository);
+
         return $this->render($this->getIndexView(), [
             'entities' => $entities
         ]);

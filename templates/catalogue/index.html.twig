@@ -18,6 +18,7 @@
                 <div class="row border border-start-0 border-end-0 border-bottom-0 {% if loop.first %}border-top-0{% endif %} pt-2 pb-2">
                     <div class="col-12 col-md-8">
                         <span class="fw-semibold fs-5">{{ catalogue.name }}</span>
+                        <span class="font-italic text-muted">(Liczba przedmiotów: {{ catalogue.itemCount }})</span>
                         <br>
                         <span class="text-muted fs-6"> Utworzono: {{ catalogue.createDate | date('Y-m-d H:i:s') }}</span>
                     </div>

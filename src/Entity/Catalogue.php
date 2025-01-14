@@ -26,6 +26,10 @@ class Catalogue
     #[ORM\Column]
     private ?int $itemCount = 0;
 
+    #[ORM\ManyToOne(inversedBy: 'catalogues')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->createDate = new \DateTime();
@@ -61,6 +65,18 @@ class Catalogue
     public function setItemCount(int $itemCount): static
     {
         $this->itemCount = $itemCount;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
