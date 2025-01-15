@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
@@ -13,7 +13,31 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
-        {% block body %}{% endblock %}
+    <body data-bs-theme="dark" class="bg-dark">
+        {{ include('parts/navbar.html.twig') }}
+        <div class="container" {{ stimulus_controller('main') }}>
+            <div class="fs-4 text-muted mt-4">{% block page_title %}{% endblock %}</div>
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success mt-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('warning') %}
+                <div class="alert alert-warning mt-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger mt-3">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <div class="bg-dark border border-light-subtle rounded-1 border-1 mt-3 mb-3">
+                <div class="page-actions ps-3 pe-3 bg-dark-subtle">{% block actions %}{% endblock %}</div>
+                <div class="page-content p-3">
+                    {% block body %}{% endblock %}
+                </div>
+            </div>
+        </div>
     </body>
 </html>
