@@ -24,6 +24,13 @@ class CatalogueController extends AbstractAppController
         return parent::form($id);
     }
 
+
+    #[Route('/catalogue/view/{id}', name: 'catalogue_view')]
+    public function view(int $id): Response
+    {
+        return parent::view($id);
+    }
+
     protected function getIndexList(EntityRepository $entityRepository): array|Collection
     {
         return $entityRepository->findBy(['user' => $this->getUser()], ['id' => 'DESC']);
@@ -47,6 +54,11 @@ class CatalogueController extends AbstractAppController
     protected function getIndexView(): string
     {
         return 'catalogue/index.html.twig';
+    }
+
+    protected function getDetailsView(): string
+    {
+        return 'catalogue/view.html.twig';
     }
 
     protected function getRedirectRoute(): ?string

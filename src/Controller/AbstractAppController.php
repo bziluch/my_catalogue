@@ -17,6 +17,10 @@ abstract class AbstractAppController extends AbstractController
     abstract protected function getFormView(): string;
     abstract protected function getIndexView(): string;
 
+    protected function getDetailsView(): string {
+        return '';
+    }
+
     protected function getRedirectRoute(): ?string {
         return null;
     }
@@ -65,6 +69,18 @@ abstract class AbstractAppController extends AbstractController
         return $this->render($this->getFormView(), [
             'entity' => $entity,
             'form' => $form->createView()
+        ]);
+    }
+
+    public function view(int $id) : Response
+    {
+        $entity = $this->entityManager->getRepository($this->getEntityClass())->find($id);
+        if (!$entity) {
+            throw new NotFoundHttpException();
+        }
+
+        return $this->render($this->getDetailsView(), [
+            'entity' => $entity
         ]);
     }
 
