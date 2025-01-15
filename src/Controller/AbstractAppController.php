@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\AbstractEntity;
+use App\Helper\ContextHolder;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -46,7 +48,7 @@ abstract class AbstractAppController extends AbstractController
         ]);
     }
 
-    public function form(?int $id = null) : Response
+    public function form(ContextHolder $contextHolder, ?int $id = null) : Response
     {
         if ($id) {
             $entity = $this->entityManager->getRepository($this->getEntityClass())->find($id);
@@ -56,6 +58,9 @@ abstract class AbstractAppController extends AbstractController
         } else {
             $entity = new ($this->getEntityClass())();
         }
+
+        $this->postGetEntity($entity, $contextHolder);
+
         $form = $this->createForm($this->getFormTypeClass(), $entity);
         $form->handleRequest($this->requestStack->getCurrentRequest());
         if ($form->isSubmitted() && $form->isValid())
@@ -82,6 +87,10 @@ abstract class AbstractAppController extends AbstractController
         return $this->render($this->getDetailsView(), [
             'entity' => $entity
         ]);
+    }
+
+    protected function postGetEntity(AbstractEntity $entity, ContextHolder $contextHolder) : void
+    {
     }
 
 }

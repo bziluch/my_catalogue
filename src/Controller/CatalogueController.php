@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Catalogue;
 use App\Form\CatalogueType;
+use App\Helper\ContextHolder;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,9 +20,9 @@ class CatalogueController extends AbstractAppController
 
     #[Route('/catalogue/new', name: 'catalogue_new')]
     #[Route('/catalogue/edit/{id}', name: 'catalogue_edit')]
-    public function form(?int $id = null): Response
+    public function form(ContextHolder $contextHolder, ?int $id = null): Response
     {
-        return parent::form($id);
+        return parent::form($contextHolder, $id);
     }
 
 

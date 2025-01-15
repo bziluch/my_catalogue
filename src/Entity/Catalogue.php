@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CatalogueRepository::class)]
-class Catalogue
+class Catalogue extends AbstractEntity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
