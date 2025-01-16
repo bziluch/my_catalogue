@@ -6,12 +6,22 @@ use App\Entity\AbstractEntity;
 use App\Entity\Catalogue;
 use App\Entity\Item;
 use App\Helper\ContextHolder;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ItemController extends AbstractAppController
 {
+
+    #[Route('/catalogue/view/{catalogueId}', name: 'item_list')]
+    public function index(ContextHolder $contextHolder, int $catalogueId = 0): Response
+    {
+        $contextHolder->add('catalogue', $this->entityManager->getRepository(Catalogue::class)->find($catalogueId));
+
+        return parent::index($contextHolder);
+    }
 
     #[Route('/catalogue/{catalogueId}/new-item', name: 'item_new')]
     #[Route('/item/edit/{id}', name: 'item_edit')]
@@ -29,6 +39,11 @@ class ItemController extends AbstractAppController
         return Item::class;
     }
 
+    protected function getIndexList(EntityRepository $entityRepository, ContextHolder $contextHolder): array|Collection
+    {
+        return $this->getRepository()->findBy(['catalogue' => $contextHolder->get('catalogue')]);
+    }
+
     protected function getFormTypeClass(): string
     {
         // TODO: Implement getFormTypeClass() method.
@@ -44,7 +59,7 @@ class ItemController extends AbstractAppController
     protected function getIndexView(): string
     {
         // TODO: Implement getIndexView() method.
-        return ''; // temporary
+        return 'item/index.html.twig'; // temporary
     }
 
     /**
@@ -62,5 +77,10 @@ class ItemController extends AbstractAppController
         if (!$catalogue instanceof Catalogue || $catalogue->getUser() !== $this->getUser()) {
             throw new NotFoundHttpException();
         }
+    }
+
+    protected function indexAdditionalParams(ContextHolder $contextHolder): array
+    {
+        return ['catalogue' => $contextHolder->get('catalogue')];
     }
 }

@@ -13,9 +13,9 @@ use Symfony\Component\Routing\Attribute\Route;
 class CatalogueController extends AbstractAppController
 {
     #[Route('/catalogue/list', name: 'catalogue_list')]
-    public function index(): Response
+    public function index(ContextHolder $contextHolder): Response
     {
-        return parent::index();
+        return parent::index($contextHolder);
     }
 
     #[Route('/catalogue/new', name: 'catalogue_new')]
@@ -26,13 +26,13 @@ class CatalogueController extends AbstractAppController
     }
 
 
-    #[Route('/catalogue/view/{id}', name: 'catalogue_view')]
-    public function view(int $id): Response
-    {
-        return parent::view($id);
-    }
+//    #[Route('/catalogue/view/{id}', name: 'catalogue_view')]
+//    public function view(int $id): Response
+//    {
+//        return parent::view($id);
+//    }
 
-    protected function getIndexList(EntityRepository $entityRepository): array|Collection
+    protected function getIndexList(EntityRepository $entityRepository, ContextHolder $contextHolder): array|Collection
     {
         return $entityRepository->findBy(['user' => $this->getUser()], ['id' => 'DESC']);
     }
@@ -55,11 +55,6 @@ class CatalogueController extends AbstractAppController
     protected function getIndexView(): string
     {
         return 'catalogue/index.html.twig';
-    }
-
-    protected function getDetailsView(): string
-    {
-        return 'catalogue/view.html.twig';
     }
 
     protected function getRedirectRoute(): ?string

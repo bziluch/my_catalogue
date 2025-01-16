@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Katalog - {{ catalogue.name }}{% endblock %}
+{% block page_title %}Katalog - {{ catalogue.name }}{% endblock %}
+
+{% block actions %}
+{#    <div class="pt-2 pb-2">#}
+{#        <a href="{{ path('item_new', {'collectionId' : collection.id }) }}">#}
+{#            <button type="button" class="btn btn-sm btn-outline-info">Dodaj przedmiot</button>#}
+{#        </a>#}
+{#    </div>#}
+    <div class="pt-2 pb-2">
+        <a href="{{ path('catalogue_list') }}">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Wróć do listy katalogów</button>
+        </a>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="items-list-container">
+        {% if entities | length > 0 %}
+
+        {% else %}
+            <p>Brak przedmiotów w kolekcji</p>
+        {% endif %}
+    </div>
+{% endblock %}

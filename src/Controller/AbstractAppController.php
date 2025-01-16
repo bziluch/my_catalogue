@@ -19,17 +19,18 @@ abstract class AbstractAppController extends AbstractController
     abstract protected function getFormView(): string;
     abstract protected function getIndexView(): string;
 
-    protected function getDetailsView(): string {
-        return '';
-    }
-
     protected function getRedirectRoute(): ?string {
         return null;
     }
 
-    protected function getIndexList(EntityRepository $entityRepository): array|Collection
+    protected function getIndexList(EntityRepository $entityRepository, ContextHolder $contextHolder): array|Collection
     {
         return $entityRepository->findAll();
+    }
+
+    protected function getRepository(): EntityRepository
+    {
+        return $this->entityManager->getRepository($this->getEntityClass());
     }
 
     public function __construct(
@@ -38,14 +39,14 @@ abstract class AbstractAppController extends AbstractController
     ) {
     }
 
-    public function index() : Response
+    public function index(ContextHolder $contextHolder) : Response
     {
-        $repository = $this->entityManager->getRepository($this->getEntityClass());
-        $entities = $this->getIndexList($repository);
+        $entities = $this->getIndexList($this->getRepository(), $contextHolder);
 
-        return $this->render($this->getIndexView(), [
-            'entities' => $entities
-        ]);
+        return $this->render(
+            $this->getIndexView(),
+            array_merge(['entities' => $entities], $this->indexAdditionalParams($contextHolder))
+        );
     }
 
     public function form(ContextHolder $contextHolder, ?int $id = null) : Response
@@ -77,20 +78,13 @@ abstract class AbstractAppController extends AbstractController
         ]);
     }
 
-    public function view(int $id) : Response
-    {
-        $entity = $this->entityManager->getRepository($this->getEntityClass())->find($id);
-        if (!$entity) {
-            throw new NotFoundHttpException();
-        }
-
-        return $this->render($this->getDetailsView(), [
-            'entity' => $entity
-        ]);
-    }
-
     protected function postGetEntity(AbstractEntity $entity, ContextHolder $contextHolder) : void
     {
+    }
+
+    protected function indexAdditionalParams(ContextHolder $contextHolder): array
+    {
+        return [];
     }
 
 }
