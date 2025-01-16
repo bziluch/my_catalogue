@@ -17,7 +17,25 @@
 {% block body %}
     <div class="items-list-container">
         {% if entities | length > 0 %}
-
+            {% for item in entities %}
+                <div class="row border border-start-0 border-end-0 border-bottom-0 {% if loop.first %}border-top-0{% endif %} pt-2 pb-2">
+                    <div class="col-12 col-md-8">
+                        <span class="fw-semibold fs-5">{{ item.name }}</span>
+                        <br>
+                        <span class="text-muted fw-light">{{ item.description }}</span>
+{#                        <span class="text-muted fs-6"> Utworzono: {{ catalogue.createDate | date('Y-m-d H:i:s') }}</span>#}
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="mt-2 text-end">
+                            <a href="{{ path('item_edit', {'id': item.id}) }}">
+                                <button type="button" class="btn btn-sm btn-warning">
+                                    <i class="fa-solid fa-gear"></i> Edycja
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         {% else %}
             <p>Brak przedmiotów w kolekcji</p>
         {% endif %}
