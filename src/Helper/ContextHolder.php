@@ -11,22 +11,19 @@ use Doctrine\Common\Collections\Collection;
  */
 class ContextHolder
 {
-    /**
-     * @var array<AbstractEntity|Collection>
-     */
     private array $container = [];
 
     public function add(
         string $key,
-        AbstractEntity|Collection $value
+        mixed $value
     ): void {
 
-        $container[$key] = $value;
+        $this->container[$key] = $value;
     }
 
     public function get(
         string $key
-    ): AbstractEntity|Collection {
+    ): mixed {
 
         return $this->container[$key];
     }
