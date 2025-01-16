@@ -7,6 +7,7 @@ use App\Form\CatalogueType;
 use App\Helper\ContextHolder;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -24,13 +25,6 @@ class CatalogueController extends AbstractAppController
     {
         return parent::form($contextHolder, $id);
     }
-
-
-//    #[Route('/catalogue/view/{id}', name: 'catalogue_view')]
-//    public function view(int $id): Response
-//    {
-//        return parent::view($id);
-//    }
 
     protected function getIndexList(EntityRepository $entityRepository, ContextHolder $contextHolder): array|Collection
     {
@@ -57,8 +51,8 @@ class CatalogueController extends AbstractAppController
         return 'catalogue/index.html.twig';
     }
 
-    protected function getRedirectRoute(): ?string
+    protected function getRedirect(ContextHolder $contextHolder): ?RedirectResponse
     {
-        return 'catalogue_list';
+        return $this->redirectToRoute('catalogue_list');
     }
 }

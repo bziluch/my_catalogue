@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -19,7 +20,7 @@ abstract class AbstractAppController extends AbstractController
     abstract protected function getFormView(): string;
     abstract protected function getIndexView(): string;
 
-    protected function getRedirectRoute(): ?string {
+    protected function getRedirect(ContextHolder $contextHolder): ?RedirectResponse {
         return null;
     }
 
@@ -68,8 +69,8 @@ abstract class AbstractAppController extends AbstractController
         {
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
-            if ($this->getRedirectRoute()) {
-                return $this->redirectToRoute($this->getRedirectRoute());
+            if (null !== ($redirect = $this->getRedirect($contextHolder))) {
+                return $redirect;
             }
         }
         return $this->render($this->getFormView(), [

@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\AbstractEntity;
 use App\Entity\Catalogue;
 use App\Entity\Item;
+use App\Form\ItemType;
 use App\Helper\ContextHolder;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -28,9 +30,9 @@ class ItemController extends AbstractAppController
     public function form(
         ContextHolder $contextHolder,
         ?int $id = null,
-        ?int $catalogueId = null
+        int $catalogueId = 0
     ): Response {
-        $contextHolder->add('catalogueId', $catalogueId);
+        $contextHolder->add('catalogue', $this->entityManager->getRepository(Catalogue::class)->find($catalogueId));
         return parent::form($contextHolder, $id);
     }
 
@@ -46,20 +48,22 @@ class ItemController extends AbstractAppController
 
     protected function getFormTypeClass(): string
     {
-        // TODO: Implement getFormTypeClass() method.
-        return ''; // temporary
+        return ItemType::class;
     }
 
     protected function getFormView(): string
     {
-        // TODO: Implement getFormView() method.
-        return ''; // temporary
+        return 'item/form.html.twig';
     }
 
     protected function getIndexView(): string
     {
-        // TODO: Implement getIndexView() method.
-        return 'item/index.html.twig'; // temporary
+        return 'item/index.html.twig';
+    }
+
+    protected function getRedirect(ContextHolder $contextHolder): ?RedirectResponse
+    {
+        return $this->redirectToRoute('item_list', ['catalogueId' => $contextHolder->get('catalogue')->getId()]);
     }
 
     /**
@@ -68,14 +72,16 @@ class ItemController extends AbstractAppController
     protected function postGetEntity(AbstractEntity $entity, ContextHolder $contextHolder): void
     {
         if ($entity->getId() !== null) {
-            $catalogue = $entity->getCatalogue();
-        } else {
-            $catalogue = $this->entityManager->getRepository(Catalogue::class)->find($contextHolder->get('catalogueId'));
-            $entity->setCatalogue($catalogue);
-        }
+            $contextHolder->add('catalogue', $entity->getCatalogue());
 
-        if (!$catalogue instanceof Catalogue || $catalogue->getUser() !== $this->getUser()) {
-            throw new NotFoundHttpException();
+        } else {
+            $catalogue = $contextHolder->get('catalogue');
+
+            if (!$catalogue instanceof Catalogue || $catalogue->getUser() !== $this->getUser()) {
+                throw new NotFoundHttpException();
+            }
+
+            $entity->setCatalogue($catalogue);
         }
     }
 

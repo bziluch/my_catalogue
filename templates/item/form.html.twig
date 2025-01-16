@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dodaj/Edytuj przedmiot{% endblock %}
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block page_title %}
+    {% if form.vars.data.id is not null %}
+        Edycja przedmiotu
+    {% else %}
+        Dodaj przedmiot
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    {{ form(form) }}
+{% endblock %}

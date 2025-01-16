@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ItemRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
 class Item extends AbstractEntity
@@ -27,6 +28,7 @@ class Item extends AbstractEntity
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $pricingMin = null;
 
+    #[Assert\GreaterThan(propertyPath: 'pricingMin', message: "Wartośc musi być większa od wyceny minimalnej")]
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $pricingMax = null;
 
