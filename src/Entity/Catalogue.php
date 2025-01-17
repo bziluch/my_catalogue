@@ -149,4 +149,32 @@ class Catalogue extends AbstractEntity
 
         return $this;
     }
+
+    public function recountValue(): void
+    {
+        $minValue = 0;
+        $maxValue = 0;
+
+        $items = $this->getItems();
+        foreach ($items as $item) {
+
+            if (!$item->hasPricing()) {
+                continue;
+            }
+
+            if (!$item->getPricingMin()) {
+                $minValue += $item->getPricingMax();
+                $maxValue += $item->getPricingMax();
+            } elseif (!$item->getPricingMax()) {
+                $minValue += $item->getPricingMin();
+                $maxValue += $item->getPricingMin();
+            } else {
+                $minValue += $item->getPricingMin();
+                $maxValue += $item->getPricingMax();
+            }
+        }
+
+        $this->setPricingMin($minValue);
+        $this->setPricingMax($maxValue);
+    }
 }

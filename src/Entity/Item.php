@@ -131,4 +131,9 @@ class Item extends AbstractEntity
 
         return $this;
     }
+
+    public function hasPricing(): bool
+    {
+        return null !== $this->getPricingMin() || null !== $this->getPricingMax();
+    }
 }
