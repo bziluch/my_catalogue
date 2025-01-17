@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CatalogueRepository;
+use App\Trait\Entity\PricingLabelTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -12,6 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: CatalogueRepository::class)]
 class Catalogue extends AbstractEntity
 {
+    use PricingLabelTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -39,10 +42,10 @@ class Catalogue extends AbstractEntity
     private Collection $items;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    private ?string $pricingMin = null;
+    private ?string $pricingMin = '0.00';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    private ?string $pricingMax = null;
+    private ?string $pricingMax = '0.00';
 
     public function __construct()
     {

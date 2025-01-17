@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ItemRepository;
+use App\Trait\Entity\PricingLabelTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,6 +11,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
 class Item extends AbstractEntity
 {
+    use PricingLabelTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -130,10 +133,5 @@ class Item extends AbstractEntity
         $this->updateDate = $updateDate;
 
         return $this;
-    }
-
-    public function hasPricing(): bool
-    {
-        return null !== $this->getPricingMin() || null !== $this->getPricingMax();
     }
 }

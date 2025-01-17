@@ -15,12 +15,19 @@
 {% endblock %}
 
 {% block body %}
+    <h4>
+        <span class="badge rounded-pill bg-light text-dark">Wycena katalogu: {{ catalogue.getPricingLabel }}</span>
+    </h4>
     <div class="items-list-container">
         {% if entities | length > 0 %}
             {% for item in entities %}
                 <div class="row border border-start-0 border-end-0 border-bottom-0 {% if loop.first %}border-top-0{% endif %} pt-2 pb-2">
                     <div class="col-12 col-md-8">
                         <span class="fw-semibold fs-4">{{ item.name }}</span>
+                        {% if item.hasPricing %}
+                            <br>
+                            <span class="badge rounded-pill bg-info text-dark">{{ item.getPricingLabel }}</span>
+                        {% endif %}
                         <br>
                         <span class="text-muted fs-5">{{ item.description }}</span>
                         <br>
