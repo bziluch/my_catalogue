@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ItemRepository;
+use App\Trait\Entity\PricingLabelTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,6 +11,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ItemRepository::class)]
 class Item extends AbstractEntity
 {
+    use PricingLabelTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -31,6 +34,17 @@ class Item extends AbstractEntity
     #[Assert\GreaterThan(propertyPath: 'pricingMin', message: "Wartośc musi być większa od wyceny minimalnej")]
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $pricingMax = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $createDate = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updateDate = null;
+
+    public function __construct()
+    {
+        $this->createDate = new \DateTime();
+    }
 
     public function getId(): ?int
     {
@@ -93,6 +107,30 @@ class Item extends AbstractEntity
     public function setPricingMax(?string $pricingMax): static
     {
         $this->pricingMax = $pricingMax;
+
+        return $this;
+    }
+
+    public function getCreateDate(): ?\DateTimeInterface
+    {
+        return $this->createDate;
+    }
+
+    public function setCreateDate(\DateTimeInterface $createDate): static
+    {
+        $this->createDate = $createDate;
+
+        return $this;
+    }
+
+    public function getUpdateDate(): ?\DateTimeInterface
+    {
+        return $this->updateDate;
+    }
+
+    public function setUpdateDate(?\DateTimeInterface $updateDate): static
+    {
+        $this->updateDate = $updateDate;
 
         return $this;
     }

@@ -6,7 +6,7 @@ App allows to create and manage catalogues with items for registered user. Funct
 
 - [X] Managing catalogues
 - [X] Items in catalogues
-- [ ] Collection value estimating
+- [X] Collection value estimating
 - [ ] Item statuses, and list filtering
 - [ ] Trade values and trade offers
 - [ ] Trade history and trade profit/loss

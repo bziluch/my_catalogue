@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CatalogueRepository;
+use App\Trait\Entity\PricingLabelTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -12,6 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: CatalogueRepository::class)]
 class Catalogue extends AbstractEntity
 {
+    use PricingLabelTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -37,6 +40,12 @@ class Catalogue extends AbstractEntity
      */
     #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'catalogue')]
     private Collection $items;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $pricingMin = '0.00';
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $pricingMax = '0.00';
 
     public function __construct()
     {
@@ -118,5 +127,57 @@ class Catalogue extends AbstractEntity
         }
 
         return $this;
+    }
+
+    public function getPricingMin(): ?string
+    {
+        return $this->pricingMin;
+    }
+
+    public function setPricingMin(?string $pricingMin): static
+    {
+        $this->pricingMin = $pricingMin;
+
+        return $this;
+    }
+
+    public function getPricingMax(): ?string
+    {
+        return $this->pricingMax;
+    }
+
+    public function setPricingMax(?string $pricingMax): static
+    {
+        $this->pricingMax = $pricingMax;
+
+        return $this;
+    }
+
+    public function recountValue(): void
+    {
+        $minValue = 0;
+        $maxValue = 0;
+
+        $items = $this->getItems();
+        foreach ($items as $item) {
+
+            if (!$item->hasPricing()) {
+                continue;
+            }
+
+            if (!$item->getPricingMin()) {
+                $minValue += $item->getPricingMax();
+                $maxValue += $item->getPricingMax();
+            } elseif (!$item->getPricingMax()) {
+                $minValue += $item->getPricingMin();
+                $maxValue += $item->getPricingMin();
+            } else {
+                $minValue += $item->getPricingMin();
+                $maxValue += $item->getPricingMax();
+            }
+        }
+
+        $this->setPricingMin($minValue);
+        $this->setPricingMax($maxValue);
     }
 }
