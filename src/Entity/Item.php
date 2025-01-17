@@ -38,6 +38,11 @@ class Item extends AbstractEntity
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updateDate = null;
 
+    public function __construct()
+    {
+        $this->createDate = new \DateTime();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
