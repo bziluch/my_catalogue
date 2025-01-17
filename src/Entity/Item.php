@@ -32,6 +32,12 @@ class Item extends AbstractEntity
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $pricingMax = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $createDate = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updateDate = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -93,6 +99,30 @@ class Item extends AbstractEntity
     public function setPricingMax(?string $pricingMax): static
     {
         $this->pricingMax = $pricingMax;
+
+        return $this;
+    }
+
+    public function getCreateDate(): ?\DateTimeInterface
+    {
+        return $this->createDate;
+    }
+
+    public function setCreateDate(\DateTimeInterface $createDate): static
+    {
+        $this->createDate = $createDate;
+
+        return $this;
+    }
+
+    public function getUpdateDate(): ?\DateTimeInterface
+    {
+        return $this->updateDate;
+    }
+
+    public function setUpdateDate(?\DateTimeInterface $updateDate): static
+    {
+        $this->updateDate = $updateDate;
 
         return $this;
     }

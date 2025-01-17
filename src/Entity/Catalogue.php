@@ -38,6 +38,12 @@ class Catalogue extends AbstractEntity
     #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'catalogue')]
     private Collection $items;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $pricingMin = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $pricingMax = null;
+
     public function __construct()
     {
         $this->createDate = new \DateTime();
@@ -116,6 +122,30 @@ class Catalogue extends AbstractEntity
                 $item->setCatalogue(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPricingMin(): ?string
+    {
+        return $this->pricingMin;
+    }
+
+    public function setPricingMin(?string $pricingMin): static
+    {
+        $this->pricingMin = $pricingMin;
+
+        return $this;
+    }
+
+    public function getPricingMax(): ?string
+    {
+        return $this->pricingMax;
+    }
+
+    public function setPricingMax(?string $pricingMax): static
+    {
+        $this->pricingMax = $pricingMax;
 
         return $this;
     }
