@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Model\Enum\ItemStatusEnum;
 use App\Repository\ItemRepository;
 use App\Trait\Entity\PricingLabelTrait;
 use Doctrine\DBAL\Types\Types;
@@ -40,6 +41,9 @@ class Item extends AbstractEntity
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updateDate = null;
+
+    #[ORM\Column(enumType: ItemStatusEnum::class)]
+    private ?ItemStatusEnum $status = null;
 
     public function __construct()
     {
@@ -131,6 +135,18 @@ class Item extends AbstractEntity
     public function setUpdateDate(?\DateTimeInterface $updateDate): static
     {
         $this->updateDate = $updateDate;
+
+        return $this;
+    }
+
+    public function getStatus(): ?ItemStatusEnum
+    {
+        return $this->status;
+    }
+
+    public function setStatus(ItemStatusEnum $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
