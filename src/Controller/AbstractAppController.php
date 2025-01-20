@@ -3,10 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\AbstractEntity;
+use App\Form\Filters\AbstractFilterType;
 use App\Helper\ContextHolder;
+use App\Model\Enum\FilterTypeEnum;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -20,6 +23,11 @@ abstract class AbstractAppController extends AbstractController
     abstract protected function getFormView(): string;
     abstract protected function getIndexView(): string;
 
+    protected function getFilterFormType(): ?string
+    {
+        return null;
+    }
+
     protected function getRedirect(ContextHolder $contextHolder): ?RedirectResponse {
         return null;
     }
@@ -27,6 +35,10 @@ abstract class AbstractAppController extends AbstractController
     protected function getIndexList(EntityRepository $entityRepository, ContextHolder $contextHolder): array|Collection
     {
         return $entityRepository->findAll();
+    }
+
+    protected function updateIndexQuery(QueryBuilder $queryBuilder, ContextHolder $contextHolder): void
+    {
     }
 
     protected function getRepository(): EntityRepository
@@ -42,6 +54,39 @@ abstract class AbstractAppController extends AbstractController
 
     public function index(ContextHolder $contextHolder) : Response
     {
+        $query = $this->getRepository()->createQueryBuilder('e');
+
+        if ($this->getFilterFormType())
+        {
+            $filterForm = $this->createForm($this->getFilterFormType());
+            $filterForm->handleRequest($this->requestStack->getCurrentRequest());
+
+            if ($filterForm->isSubmitted() && $filterForm->isValid())
+            {
+                /** @var array<string, FilterTypeEnum> $filterTypes */
+                $filterTypes = (AbstractFilterType::class)($this->getFilterFormType())::defineFilterTypes();
+
+                foreach ($filterTypes as $filterName => $filterTypeValue)
+                {
+                    $expr = match ($filterTypeValue) {
+                        FilterTypeEnum::Like => ':'.$filterName.' LIKE "%:'.$filterName.'%"',
+                        FilterTypeEnum::Exact => ':'.$filterName.' = ":'.$filterName.'"'
+                    };
+
+                    if (null !== ($value = $filterForm->get($filterName)->getData()))
+
+                    $query->andWhere($expr)->setParameter($filterName, $value);
+                }
+
+            }
+
+        }
+
+        $this->updateIndexQuery($query, $contextHolder);
+
+        /*
+         * TODO: replace entities with results from $query
+         */
         $entities = $this->getIndexList($this->getRepository(), $contextHolder);
 
         return $this->render(
