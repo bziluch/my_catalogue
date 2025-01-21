@@ -7,6 +7,7 @@ use App\Form\CatalogueType;
 use App\Helper\ContextHolder;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -26,9 +27,12 @@ class CatalogueController extends AbstractAppController
         return parent::form($contextHolder, $id);
     }
 
-    protected function getIndexList(EntityRepository $entityRepository, ContextHolder $contextHolder): array|Collection
+    protected function updateIndexQuery(QueryBuilder $queryBuilder, ContextHolder $contextHolder): void
     {
-        return $entityRepository->findBy(['user' => $this->getUser()], ['id' => 'DESC']);
+        $queryBuilder
+            ->andWhere('e.user = :user')
+            ->setParameter('user', $this->getUser())
+            ->addOrderBy('e.id', 'DESC');
     }
 
     protected function getEntityClass(): string

@@ -32,11 +32,6 @@ abstract class AbstractAppController extends AbstractController
         return null;
     }
 
-    protected function getIndexList(EntityRepository $entityRepository, ContextHolder $contextHolder): array|Collection
-    {
-        return $entityRepository->findAll();
-    }
-
     protected function updateIndexQuery(QueryBuilder $queryBuilder, ContextHolder $contextHolder): void
     {
     }
@@ -56,7 +51,7 @@ abstract class AbstractAppController extends AbstractController
     {
         $query = $this->getRepository()->createQueryBuilder('e');
 
-        if ($this->getFilterFormType())
+        if (null !== $this->getFilterFormType())
         {
             $filterForm = $this->createForm($this->getFilterFormType());
             $filterForm->handleRequest($this->requestStack->getCurrentRequest());
@@ -64,16 +59,18 @@ abstract class AbstractAppController extends AbstractController
             if ($filterForm->isSubmitted() && $filterForm->isValid())
             {
                 /** @var array<string, FilterTypeEnum> $filterTypes */
-                $filterTypes = (AbstractFilterType::class)($this->getFilterFormType())::defineFilterTypes();
+                $filterTypes = ($this->getFilterFormType())::defineFilterTypes();
 
                 foreach ($filterTypes as $filterName => $filterTypeValue)
                 {
-                    $expr = match ($filterTypeValue) {
-                        FilterTypeEnum::Like => ':'.$filterName.' LIKE "%:'.$filterName.'%"',
-                        FilterTypeEnum::Exact => ':'.$filterName.' = ":'.$filterName.'"'
-                    };
+                    if (null === ($value = $filterForm->get($filterName)->getData())) {
+                        continue;
+                    }
 
-                    if (null !== ($value = $filterForm->get($filterName)->getData()))
+                    $expr = match ($filterTypeValue) {
+                        FilterTypeEnum::Like => 'e.'.$filterName." LIKE '%:".$filterName."%'",
+                        FilterTypeEnum::Exact => 'e.'.$filterName." = :".$filterName
+                    };
 
                     $query->andWhere($expr)->setParameter($filterName, $value);
                 }
@@ -83,15 +80,15 @@ abstract class AbstractAppController extends AbstractController
         }
 
         $this->updateIndexQuery($query, $contextHolder);
+        $args = ['entities' => $query->getQuery()->getResult() ];
 
-        /*
-         * TODO: replace entities with results from $query
-         */
-        $entities = $this->getIndexList($this->getRepository(), $contextHolder);
+        if (null !== $this->getFilterFormType()) {
+            $args['filterForm'] = $filterForm->createView();
+        }
 
         return $this->render(
             $this->getIndexView(),
-            array_merge(['entities' => $entities], $this->indexAdditionalParams($contextHolder))
+            array_merge($args, $this->indexAdditionalParams($contextHolder))
         );
     }
 

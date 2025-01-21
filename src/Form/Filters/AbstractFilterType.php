@@ -20,7 +20,12 @@ abstract class AbstractFilterType extends AbstractType
     {
         $this->buildFilterForm($builder);
 
-        $builder->add('save', SubmitType::class);
+        $builder->add('save', SubmitType::class, [
+            'label' => 'Filtruj',
+            'attr' => [
+                'class' => 'btn btn-sm btn-primary',
+            ]
+        ]);
     }
 
 }

@@ -5,10 +5,12 @@ namespace App\Controller;
 use App\Entity\AbstractEntity;
 use App\Entity\Catalogue;
 use App\Entity\Item;
+use App\Form\Filters\ItemFilterType;
 use App\Form\ItemType;
 use App\Helper\ContextHolder;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -41,14 +43,21 @@ class ItemController extends AbstractAppController
         return Item::class;
     }
 
-    protected function getIndexList(EntityRepository $entityRepository, ContextHolder $contextHolder): array|Collection
+    protected function updateIndexQuery(QueryBuilder $queryBuilder, ContextHolder $contextHolder): void
     {
-        return $this->getRepository()->findBy(['catalogue' => $contextHolder->get('catalogue')]);
+        $queryBuilder
+            ->andWhere('e.catalogue = :catalogue')
+            ->setParameter('catalogue', $contextHolder->get('catalogue'));
     }
 
     protected function getFormTypeClass(): string
     {
         return ItemType::class;
+    }
+
+    protected function getFilterFormType(): string
+    {
+        return ItemFilterType::class;
     }
 
     protected function getFormView(): string

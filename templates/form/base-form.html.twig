@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% if filterForm is defined %}
+    {% form_theme filterForm 'bootstrap_5_layout.html.twig' %}
+{% endif %}
+
+{% block body %}
+    {% if filterForm is defined %}
+        <p>
+            <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" aria-expanded="false" aria-controls="filtersCollapse">
+                Filtry
+            </button>
+        </p>
+        <div class="collapse mb-3" id="filtersCollapse">
+            <div class="card card-body">
+                {{ form(filterForm) }}
+            </div>
+        </div>
+    {% endif %}
+
+    {% block list %}{% endblock %}
+{% endblock %}

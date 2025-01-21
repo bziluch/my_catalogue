@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'form/base-form.html.twig' %}
 
 {% block title %}Katalog - {{ catalogue.name }}{% endblock %}
 {% block page_title %}Katalog - {{ catalogue.name }}{% endblock %}
@@ -14,7 +14,7 @@
     </div>
 {% endblock %}
 
-{% block body %}
+{% block list %}
     <h4>
         <span class="badge rounded-pill bg-light text-dark">Wycena katalogu: {{ catalogue.getPricingLabel }}</span>
     </h4>
