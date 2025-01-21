@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Item;
+use App\Model\Enum\ItemStatusEnum;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -37,6 +39,10 @@ class ItemType extends AbstractType
                     'step' => '0.01',
                     'max' => '99999999.99'
                 ]
+            ])
+            ->add('status', EnumType::class, [
+                'label' => 'Status',
+                'class' => ItemStatusEnum::class
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Zapisz',
