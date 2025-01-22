@@ -9,6 +9,8 @@ use App\Form\Filters\ItemFilterType;
 use App\Form\ItemCatalogueType;
 use App\Form\ItemType;
 use App\Helper\ContextHolder;
+use App\Repository\CatalogueRepository;
+use App\Service\CatalogueService;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -42,6 +44,8 @@ class ItemController extends AbstractAppController
 
     #[Route('/item/update-catalogue/{id}', name: 'item_update_catalogue')]
     public function catalogueForm(
+        CatalogueService $catalogueService,
+        CatalogueRepository $catalogueRepository,
         int $id,
     ): Response
     {
@@ -49,7 +53,7 @@ class ItemController extends AbstractAppController
         if (!$entity) {
             throw new NotFoundHttpException();
         }
-        $catalogueId = $entity->getCatalogue()->getId();
+        $oldCatalogueId = $entity->getCatalogue()->getId();
 
         $form = $this->createForm(ItemCatalogueType::class, $entity);
         $form->handleRequest($this->requestStack->getCurrentRequest());
@@ -58,7 +62,18 @@ class ItemController extends AbstractAppController
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('item_list', ['catalogueId' => $catalogueId]);
+            if ($oldCatalogueId !== $entity->getCatalogue()->getId())
+            {
+                $oldCatalogue = $catalogueRepository->find($oldCatalogueId);
+                $catalogueService->updateCataloguePricing($oldCatalogue, false);
+                $catalogueService->updateItemsCount($oldCatalogue, false);
+
+                $newCatalogue = $entity->getCatalogue();
+                $catalogueService->updateCataloguePricing($newCatalogue, false);
+                $catalogueService->updateItemsCount($newCatalogue);
+            }
+
+            return $this->redirectToRoute('item_list', ['catalogueId' => $oldCatalogueId]);
         }
 
         return $this->render($this->getFormView(), [
