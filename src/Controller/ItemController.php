@@ -6,6 +6,7 @@ use App\Entity\AbstractEntity;
 use App\Entity\Catalogue;
 use App\Entity\Item;
 use App\Form\Filters\ItemFilterType;
+use App\Form\ItemCatalogueType;
 use App\Form\ItemType;
 use App\Helper\ContextHolder;
 use Doctrine\Common\Collections\Collection;
@@ -36,6 +37,33 @@ class ItemController extends AbstractAppController
     ): Response {
         $contextHolder->add('catalogue', $this->entityManager->getRepository(Catalogue::class)->find($catalogueId));
         return parent::form($contextHolder, $id);
+    }
+
+
+    #[Route('/item/update-catalogue/{id}', name: 'item_update_catalogue')]
+    public function catalogueForm(
+        int $id,
+    ): Response
+    {
+        $entity = $this->getRepository()->find($id);
+        if (!$entity) {
+            throw new NotFoundHttpException();
+        }
+        $catalogueId = $entity->getCatalogue()->getId();
+
+        $form = $this->createForm(ItemCatalogueType::class, $entity);
+        $form->handleRequest($this->requestStack->getCurrentRequest());
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('item_list', ['catalogueId' => $catalogueId]);
+        }
+
+        return $this->render($this->getFormView(), [
+            'form' => $form->createView(),
+        ]);
     }
 
     protected function getEntityClass(): string
