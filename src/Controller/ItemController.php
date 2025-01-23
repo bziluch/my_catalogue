@@ -44,7 +44,6 @@ class ItemController extends AbstractAppController
 
     #[Route('/item/update-catalogue/{id}', name: 'item_update_catalogue')]
     public function catalogueForm(
-        CatalogueService $catalogueService,
         CatalogueRepository $catalogueRepository,
         EventDispatcherInterface $eventDispatcher,
         int $id,
@@ -85,7 +84,9 @@ class ItemController extends AbstractAppController
     {
         $queryBuilder
             ->andWhere('e.catalogue = :catalogue')
-            ->setParameter('catalogue', $contextHolder->get('catalogue'));
+            ->setParameter('catalogue', $contextHolder->get('catalogue'))
+            ->addOrderBy('e.status', 'ASC')
+            ->addOrderBy('e.id', 'DESC');
     }
 
     protected function getFormTypeClass(): string
