@@ -63,9 +63,6 @@ class ItemController extends AbstractAppController
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
 
-            /*
-             * TODO: refactor - create event changeCatalogue, and listener for it
-             */
             if ($oldCatalogueId !== $entity->getCatalogue()->getId())
             {
                 $eventDispatcher->dispatch(new ItemUpdateCatalogueEvent($entity, $catalogueRepository->find($oldCatalogueId)));
