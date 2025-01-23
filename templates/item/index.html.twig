@@ -48,6 +48,7 @@
                         <span class="fw-semibold fs-4">{{ item.name }}</span>
                         {% if item.hasPricing %}
                             <br>
+                            {{ item.getStatusLabel | raw }}
                             <span class="badge rounded-pill bg-info text-dark">{{ item.getPricingLabel }}</span>
                         {% endif %}
                         <br>
