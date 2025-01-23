@@ -36,18 +36,26 @@
                             {% if item.updateDate is not null %} / Zaktualizowano: {{ item.updateDate | date('Y-m-d H:i:s') }}{% endif %}
                         </span>
                     </div>
+{#                    TODO: move options to expandable mini-menu under one button#}
                     <div class="col-12 col-md-4">
                         <div class="mt-2 text-end">
-                            <a href="{{ path('item_edit', {'id': item.id}) }}">
-                                <button type="button" class="btn btn-sm btn-primary fw-bold">
-                                    <i class="fa-solid fa-gear"></i> Edycja
+                            <div class="dropdown">
+                                <button class="btn btn-primary btn-sm fw-bold" type="button" id="options-btn-{{ item.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                    ...
                                 </button>
-                            </a>
-                            <a href="{{ path('item_update_catalogue', {'id': item.id}) }}">
-                                <button type="button" class="btn btn-sm btn-info">
-                                    <i class="fa-solid fa-gear"></i> Zmień katalog
-                                </button>
-                            </a>
+                                <ul class="dropdown-menu" aria-labelledby="options-btn-{{ item.id }}">
+                                    <li>
+                                        <a class="dropdown-item" href="{{ path('item_edit', {'id': item.id}) }}">
+                                            Edycja
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ path('item_update_catalogue', {'id': item.id}) }}">
+                                            Zmień katalog
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
