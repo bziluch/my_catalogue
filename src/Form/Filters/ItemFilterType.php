@@ -21,7 +21,9 @@ class ItemFilterType extends AbstractFilterType
         $builder
             ->add('status', EnumType::class, [
                 'label' => 'Status',
-                'class' => ItemStatusEnum::class
+                'class' => ItemStatusEnum::class,
+                'required' => false,
+                'placeholder' => '-- wybierz --'
             ]);
     }
 }
