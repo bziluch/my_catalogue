@@ -8,7 +8,8 @@ App allows to create and manage catalogues with items for registered user. Funct
 - [X] Items in catalogues
 - [X] Collection value estimating
 - [X] Item statuses, and list filtering
-- [ ] Item list styling (buttons, description collapse)
+- [X] Item list styling (buttons, description collapse)
+- [ ] Item image and thumbnail
 - [ ] Trade values and trade offers
 - [ ] Trade history and trade profit/loss
 - [ ] Gallery - widget and uploading photos

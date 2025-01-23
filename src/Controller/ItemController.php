@@ -5,12 +5,15 @@ namespace App\Controller;
 use App\Entity\AbstractEntity;
 use App\Entity\Catalogue;
 use App\Entity\Item;
+use App\Event\ItemUpdateCatalogueEvent;
 use App\Form\Filters\ItemFilterType;
+use App\Form\ItemCatalogueType;
 use App\Form\ItemType;
 use App\Helper\ContextHolder;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityRepository;
+use App\Repository\CatalogueRepository;
+use App\Service\CatalogueService;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -38,6 +41,40 @@ class ItemController extends AbstractAppController
         return parent::form($contextHolder, $id);
     }
 
+
+    #[Route('/item/update-catalogue/{id}', name: 'item_update_catalogue')]
+    public function catalogueForm(
+        CatalogueRepository $catalogueRepository,
+        EventDispatcherInterface $eventDispatcher,
+        int $id,
+    ): Response
+    {
+        $entity = $this->getRepository()->find($id);
+        if (!$entity) {
+            throw new NotFoundHttpException();
+        }
+        $oldCatalogueId = $entity->getCatalogue()->getId();
+
+        $form = $this->createForm(ItemCatalogueType::class, $entity);
+        $form->handleRequest($this->requestStack->getCurrentRequest());
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($entity);
+            $this->entityManager->flush();
+
+            if ($oldCatalogueId !== $entity->getCatalogue()->getId())
+            {
+                $eventDispatcher->dispatch(new ItemUpdateCatalogueEvent($entity, $catalogueRepository->find($oldCatalogueId)));
+            }
+
+            return $this->redirectToRoute('item_list', ['catalogueId' => $oldCatalogueId]);
+        }
+
+        return $this->render($this->getFormView(), [
+            'form' => $form->createView(),
+        ]);
+    }
+
     protected function getEntityClass(): string
     {
         return Item::class;
@@ -47,7 +84,9 @@ class ItemController extends AbstractAppController
     {
         $queryBuilder
             ->andWhere('e.catalogue = :catalogue')
-            ->setParameter('catalogue', $contextHolder->get('catalogue'));
+            ->setParameter('catalogue', $contextHolder->get('catalogue'))
+            ->addOrderBy('e.status', 'ASC')
+            ->addOrderBy('e.id', 'DESC');
     }
 
     protected function getFormTypeClass(): string

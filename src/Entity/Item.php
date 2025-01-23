@@ -150,4 +150,14 @@ class Item extends AbstractEntity
 
         return $this;
     }
+
+    public function getStatusLabel(): string
+    {
+        return match ($this->status) {
+            ItemStatusEnum::Default => '',
+            ItemStatusEnum::Offer => '<span class="badge rounded-pill bg-light text-dark">Oferta</span>',
+            ItemStatusEnum::Sold => '<span class="badge rounded-pill bg-success">Sprzedany</span>',
+            ItemStatusEnum::Archived => '<span class="badge rounded-pill bg-danger">Zarchiwizowany</span>'
+        };
+    }
 }
