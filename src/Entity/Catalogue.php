@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Model\Enum\ItemStatusEnum;
 use App\Repository\CatalogueRepository;
 use App\Trait\Entity\PricingLabelTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -158,7 +159,11 @@ class Catalogue extends AbstractEntity
         $minValue = 0;
         $maxValue = 0;
 
-        $items = $this->getItems();
+        $items = array_filter(
+            $this->getItems()->toArray(),
+            fn (Item $item) => $item->getStatus() === ItemStatusEnum::Default
+        );
+
         foreach ($items as $item) {
 
             if (!$item->hasPricing()) {

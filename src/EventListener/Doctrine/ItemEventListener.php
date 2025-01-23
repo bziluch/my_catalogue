@@ -2,18 +2,18 @@
 
 namespace App\EventListener\Doctrine;
 
-use App\Entity\Catalogue;
 use App\Entity\Item;
+use App\Event\ItemUpdateCatalogueEvent;
 use App\Service\CatalogueService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
-use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\Persistence\Event\ManagerEventArgs;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEntityListener(event: Events::preUpdate, method: 'onPreUpdate', entity: Item::class)]
 #[AsEntityListener(event: Events::postUpdate, method: 'onPostUpdate', entity: Item::class)]
 #[AsEntityListener(event: Events::postPersist, method: 'onPostPersist', entity: Item::class)]
+#[AsEventListener(event: ItemUpdateCatalogueEvent::class, method: 'onItemUpdateCatalogue')]
 class ItemEventListener
 {
     private bool $recalculateValue = false;
@@ -45,5 +45,16 @@ class ItemEventListener
     {
         $this->catalogueService->updateCataloguePricing($item->getCatalogue());
         $this->catalogueService->updateItemsCount($item->getCatalogue());
+    }
+
+    public function onItemUpdateCatalogue(ItemUpdateCatalogueEvent $event): void
+    {
+
+        $this->catalogueService->updateCataloguePricing($event->getOldCatalogue(), false);
+        $this->catalogueService->updateItemsCount($event->getOldCatalogue(), false);
+
+        $newCatalogue = $event->getItem()->getCatalogue();
+        $this->catalogueService->updateCataloguePricing($newCatalogue, false);
+        $this->catalogueService->updateItemsCount($newCatalogue);
     }
 }

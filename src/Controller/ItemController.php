@@ -5,15 +5,15 @@ namespace App\Controller;
 use App\Entity\AbstractEntity;
 use App\Entity\Catalogue;
 use App\Entity\Item;
+use App\Event\ItemUpdateCatalogueEvent;
 use App\Form\Filters\ItemFilterType;
 use App\Form\ItemCatalogueType;
 use App\Form\ItemType;
 use App\Helper\ContextHolder;
 use App\Repository\CatalogueRepository;
 use App\Service\CatalogueService;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -46,6 +46,7 @@ class ItemController extends AbstractAppController
     public function catalogueForm(
         CatalogueService $catalogueService,
         CatalogueRepository $catalogueRepository,
+        EventDispatcherInterface $eventDispatcher,
         int $id,
     ): Response
     {
@@ -62,15 +63,12 @@ class ItemController extends AbstractAppController
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
 
+            /*
+             * TODO: refactor - create event changeCatalogue, and listener for it
+             */
             if ($oldCatalogueId !== $entity->getCatalogue()->getId())
             {
-                $oldCatalogue = $catalogueRepository->find($oldCatalogueId);
-                $catalogueService->updateCataloguePricing($oldCatalogue, false);
-                $catalogueService->updateItemsCount($oldCatalogue, false);
-
-                $newCatalogue = $entity->getCatalogue();
-                $catalogueService->updateCataloguePricing($newCatalogue, false);
-                $catalogueService->updateItemsCount($newCatalogue);
+                $eventDispatcher->dispatch(new ItemUpdateCatalogueEvent($entity, $catalogueRepository->find($oldCatalogueId)));
             }
 
             return $this->redirectToRoute('item_list', ['catalogueId' => $oldCatalogueId]);
