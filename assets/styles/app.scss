@@ -5,3 +5,9 @@ $primary: rebeccapurple;
 body {
     background-color: skyblue;
 }
+
+.item-row {
+    display: grid;
+    grid-template-columns: 100px calc(100% - 115px);
+    grid-gap: 15px;
+}

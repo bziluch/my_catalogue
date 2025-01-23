@@ -21,24 +21,10 @@
     <div class="items-list-container">
         {% if entities | length > 0 %}
             {% for item in entities %}
-                <div class="row border border-start-0 border-end-0 border-bottom-0 {% if loop.first %}border-top-0{% endif %} pt-2 pb-2">
-                    <div class="col-12 col-md-8">
-                        <span class="fw-semibold fs-4">{{ item.name }}</span>
-                        {% if item.hasPricing %}
-                            <br>
-                            <span class="badge rounded-pill bg-info text-dark">{{ item.getPricingLabel }}</span>
-                        {% endif %}
-                        <br>
-                        <span class="text-muted fs-5">{{ item.description }}</span>
-                        <br>
-                        <span class="text-muted fw-light fs-6">
-                            Utworzono: {{ item.createDate | date('Y-m-d H:i:s') }}
-                            {% if item.updateDate is not null %} / Zaktualizowano: {{ item.updateDate | date('Y-m-d H:i:s') }}{% endif %}
-                        </span>
-                    </div>
-{#                    TODO: move options to expandable mini-menu under one button#}
-                    <div class="col-12 col-md-4">
-                        <div class="mt-2 text-end">
+                <div class="item-row border border-start-0 border-end-0 border-bottom-0 {% if loop.first %}border-top-0{% endif %} pt-2 pb-2">
+                    <div>
+{#                        TODO: uploaded thumbnail here#}
+                        <div class="mt-2">
                             <div class="dropdown">
                                 <button class="btn btn-primary btn-sm fw-bold" type="button" id="options-btn-{{ item.id }}" data-bs-toggle="dropdown" aria-expanded="false">
                                     ...
@@ -57,6 +43,20 @@
                                 </ul>
                             </div>
                         </div>
+                    </div>
+                    <div>
+                        <span class="fw-semibold fs-4">{{ item.name }}</span>
+                        {% if item.hasPricing %}
+                            <br>
+                            <span class="badge rounded-pill bg-info text-dark">{{ item.getPricingLabel }}</span>
+                        {% endif %}
+                        <br>
+                        <span class="text-muted fs-5">{{ item.description }}</span>
+                        <br>
+                        <span class="text-muted fw-light fs-6">
+                            Utworzono: {{ item.createDate | date('Y-m-d H:i:s') }}
+                            {% if item.updateDate is not null %} / Zaktualizowano: {{ item.updateDate | date('Y-m-d H:i:s') }}{% endif %}
+                        </span>
                     </div>
                 </div>
             {% endfor %}
