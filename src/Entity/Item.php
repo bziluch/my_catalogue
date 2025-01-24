@@ -45,6 +45,9 @@ class Item extends AbstractEntity
     #[ORM\Column(enumType: ItemStatusEnum::class)]
     private ?ItemStatusEnum $status = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?Image $image = null;
+
     public function __construct()
     {
         $this->createDate = new \DateTime();
@@ -159,5 +162,17 @@ class Item extends AbstractEntity
             ItemStatusEnum::Sold => '<span class="badge rounded-pill bg-success">Sprzedany</span>',
             ItemStatusEnum::Archived => '<span class="badge rounded-pill bg-danger">Zarchiwizowany</span>'
         };
+    }
+
+    public function getImage(): ?Image
+    {
+        return $this->image;
+    }
+
+    public function setImage(?Image $image): static
+    {
+        $this->image = $image;
+
+        return $this;
     }
 }
