@@ -6,6 +6,7 @@ use App\Entity\Item;
 use App\Model\Enum\ItemStatusEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -23,6 +24,9 @@ class ItemType extends AbstractType
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Opis',
+            ])
+            ->add('uploadedFile', FileType::class, [
+                'label' => 'Zdjęcie'
             ])
             ->add('pricingMin', NumberType::class, [
                 'label' => 'Wycena - minimum',

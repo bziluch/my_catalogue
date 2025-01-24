@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Model\Enum\ItemStatusEnum;
 use App\Repository\ItemRepository;
+use App\Trait\Entity\ImageFieldTrait;
 use App\Trait\Entity\PricingLabelTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Item extends AbstractEntity
 {
     use PricingLabelTrait;
+    use ImageFieldTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -44,9 +46,6 @@ class Item extends AbstractEntity
 
     #[ORM\Column(enumType: ItemStatusEnum::class)]
     private ?ItemStatusEnum $status = null;
-
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Image $image = null;
 
     public function __construct()
     {
@@ -162,17 +161,5 @@ class Item extends AbstractEntity
             ItemStatusEnum::Sold => '<span class="badge rounded-pill bg-success">Sprzedany</span>',
             ItemStatusEnum::Archived => '<span class="badge rounded-pill bg-danger">Zarchiwizowany</span>'
         };
-    }
-
-    public function getImage(): ?Image
-    {
-        return $this->image;
-    }
-
-    public function setImage(?Image $image): static
-    {
-        $this->image = $image;
-
-        return $this;
     }
 }
