@@ -109,6 +109,7 @@ abstract class AbstractAppController extends AbstractController
         $form->handleRequest($this->requestStack->getCurrentRequest());
         if ($form->isSubmitted() && $form->isValid())
         {
+            $this->postFormSubmit($entity, $contextHolder);
             $this->entityManager->persist($entity);
             $this->entityManager->flush();
             if (null !== ($redirect = $this->getRedirect($contextHolder))) {
@@ -122,6 +123,10 @@ abstract class AbstractAppController extends AbstractController
     }
 
     protected function postGetEntity(AbstractEntity $entity, ContextHolder $contextHolder) : void
+    {
+    }
+
+    protected function postFormSubmit(AbstractEntity $entity, ContextHolder $contextHolder) : void
     {
     }
 

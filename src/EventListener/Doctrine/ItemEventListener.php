@@ -6,6 +6,7 @@ use App\Entity\Item;
 use App\Event\ItemSubmitImageEvent;
 use App\Event\ItemUpdateCatalogueEvent;
 use App\Service\CatalogueService;
+use App\Service\UploadService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -23,6 +24,7 @@ class ItemEventListener
 
     public function __construct(
         private readonly CatalogueService $catalogueService,
+        private readonly UploadService $uploadService,
         private readonly EventDispatcherInterface $eventDispatcher
     ) {
     }
@@ -67,6 +69,9 @@ class ItemEventListener
 
     public function onItemSubmitImage(ItemSubmitImageEvent $event): void
     {
-        //TODO: upload image here
+        $event->getItem()->setImage(
+            $this->uploadService->upload($event->getUploadedFile())
+        );
+        $event->getItem()->setUploadedFile(null);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\AbstractEntity;
 use App\Entity\Catalogue;
 use App\Entity\Item;
+use App\Event\ItemSubmitImageEvent;
 use App\Event\ItemUpdateCatalogueEvent;
 use App\Form\Filters\ItemFilterType;
 use App\Form\ItemCatalogueType;
@@ -12,15 +13,25 @@ use App\Form\ItemType;
 use App\Helper\ContextHolder;
 use App\Repository\CatalogueRepository;
 use App\Service\CatalogueService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 class ItemController extends AbstractAppController
 {
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        RequestStack $requestStack,
+        private readonly EventDispatcherInterface $eventDispatcher,
+    ) {
+        parent::__construct($entityManager, $requestStack);
+    }
 
     #[Route('/catalogue/view/{catalogueId}', name: 'item_list')]
     public function index(ContextHolder $contextHolder, int $catalogueId = 0): Response
@@ -45,7 +56,6 @@ class ItemController extends AbstractAppController
     #[Route('/item/update-catalogue/{id}', name: 'item_update_catalogue')]
     public function catalogueForm(
         CatalogueRepository $catalogueRepository,
-        EventDispatcherInterface $eventDispatcher,
         int $id,
     ): Response
     {
@@ -64,7 +74,7 @@ class ItemController extends AbstractAppController
 
             if ($oldCatalogueId !== $entity->getCatalogue()->getId())
             {
-                $eventDispatcher->dispatch(new ItemUpdateCatalogueEvent($entity, $catalogueRepository->find($oldCatalogueId)));
+                $this->eventDispatcher->dispatch(new ItemUpdateCatalogueEvent($entity, $catalogueRepository->find($oldCatalogueId)));
             }
 
             return $this->redirectToRoute('item_list', ['catalogueId' => $oldCatalogueId]);
@@ -130,6 +140,17 @@ class ItemController extends AbstractAppController
             }
 
             $entity->setCatalogue($catalogue);
+        }
+    }
+
+
+    /**
+     * @param Item $entity
+     */
+    protected function postFormSubmit(AbstractEntity $entity, ContextHolder $contextHolder): void
+    {
+        if (null !== $entity->getUploadedFile()) {
+            $this->eventDispatcher->dispatch(new ItemSubmitImageEvent($entity, $entity->getUploadedFile()));
         }
     }
 
